@@ -257,6 +257,13 @@ class SettingsWidget(QWidget):
         self.labeledWidget = CheckBoxWidget("Labeled Image", True)
         self.overlayWidget = CheckBoxWidget("Overlay Image", False)
         self.runClassificationWidget = CheckBoxWidget("Classified Image", False)
+        #self.fillHolesWidget = CheckBoxWidget("Fill Holes", True)
+        #self.removeBorderWidget = CheckBoxWidget("Remove Border", False)
+        #self.edgeWidget = CheckBoxWidget("Edge Image", False)
+        #self.colorizeWidget = CheckBoxWidget("Colorize", False)
+        #self.gifWidget = CheckBoxWidget("GIF Output", False)
+        #self.regionProperties = CheckBoxWidget("Region Properties", False)
+
         self.gifWidget = False
         self.regionProperties = False
 
@@ -288,6 +295,43 @@ class SettingsWidget(QWidget):
                                                  self.runClassificationWidget,
                                                  #self.regionProperties]
         ]]
+        # ------------------------------
+        self.advancedToggleBtn = QPushButton("Show Advanced Settings ▼")
+        self.advancedToggleBtn.setCheckable(True)
+        self.advancedToggleBtn.setChecked(False)
+        self.advancedToggleBtn.clicked.connect(self.toggleAdvancedSettings)
+
+        self.advancedWidget = QWidget()
+        self.advancedWidget.setVisible(False)
+        self.advancedLayout = QFormLayout()
+        self.advancedWidget.setLayout(self.advancedLayout)
+                              
+
+        self.advancedLayout.addRow("Model Path", self.modelPathWidget)
+        self.advancedLayout.addRow("Class Model Path", self.classModelPathWidget)
+        self.advancedLayout.addRow("YOLO Model Path", self.yoloModelPathWidget)
+        
+        # outputPathLayout = QHBoxLayout()
+        # outputPathLayout.addWidget(self.outputPathWidget)
+        # outputPathLayout.addWidget(self.browseOutputWidget)
+        self.advancedLayout.addRow("Output Path", outputLayout)
+
+
+        # [self.advancedLayout.addRow(widget) for widget in [
+        #     self.beliefWidget,
+        #     self.edgeWidget,
+        #     self.colorizeWidget,
+        #     self.gifWidget,
+        #     self.regionProperties,
+        #     self.fillHolesWidget,
+        #     self.removeBorderWidget,
+        #     self.trackWidget,
+        #     self.batchWidget
+        # ]]
+
+        layout.addWidget(self.advancedToggleBtn)
+        layout.addWidget(self.advancedWidget)
+        # ------------------------------
 
         #[trackingFormLayout.addWidget(x) for x in [self.trackWidget,
         #                                           self.batchWidget]]
@@ -296,6 +340,22 @@ class SettingsWidget(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.Verify)
         self.timer.start(30)
+
+    
+    def toggleAdvancedSettings(self):
+        visible = self.advancedToggleBtn.isChecked()
+        self.advancedWidget.setVisible(visible)
+        if visible:
+            self.advancedToggleBtn.setText("Hide Advanced Settings ▲")
+        else:
+            self.advancedToggleBtn.setText("Show Advanced Settings ▼")
+
+        self.adjustSize()
+        self.updateGeometry()
+
+        hint_height = self.sizeHint().height()
+        self.setMinimumHeight(hint_height)
+        self.setMaximumHeight(hint_height)
 
     def BrowseOutput(self):
         directory = QFileDialog.getExistingDirectory(self)
